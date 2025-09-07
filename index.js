@@ -22,7 +22,7 @@ class SocialProofPopup extends HTMLElement {
       .social-proof-popup {
         width: 100%;
         max-width: 320px;
-        background-color: rgba(235, 235, 235, 0.9);
+        background-color: rgba(255, 255, 255, 0.9);
         border-radius: 8px;
         color: rgb(90, 90, 90);
         padding: 8px;
