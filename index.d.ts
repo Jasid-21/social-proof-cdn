@@ -1,5 +1,13 @@
-declare namespace SocialProofSDK {
-    function pushEvent(eventName: string, parameters: Record<string, any>): void;
-    function firePopup(id: number, title: string, message: string): void;
-    function showPopup(title: string, message: string): void;
+declare global {
+  interface Window {
+    SocialProof: {
+      pushEvent(eventName: string, parameters: Record<string, any>): void;
+      firePopup(id: number, title: string, message: string): void;
+      showPopup(title: string, message: string): void;
+    };
+  }
+
+  const SocialProof: Window['SocialProof'];
 }
+
+export {};

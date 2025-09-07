@@ -1,0 +1,26 @@
+{
+  "name": "social-proof-cdn",
+  "version": "1.0.2",
+  "description": "SDK para mostrar popups de social proof con WebSockets y configuración sencilla vía CDN.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jasid-21/social-proof-cdn.git"
+  },
+  "keywords": [
+    "social-proof",
+    "popup",
+    "cdn",
+    "javascript",
+    "typescript",
+    "websocket",
+    "sdk"
+  ],
+  "author": "Jasid Martínez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jasid-21/social-proof-cdn/issues"
+  },
+  "homepage": "https://github.com/Jasid-21/social-proof-cdn#readme"
+}
