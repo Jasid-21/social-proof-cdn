@@ -22,12 +22,13 @@ class SocialProofPopup extends HTMLElement {
       .social-proof-popup {
         width: 100%;
         max-width: 320px;
-        background-color: rgba(196, 196, 196, 0.85);
+        background-color: rgba(235, 235, 235, 0.9);
         border-radius: 8px;
         color: rgb(90, 90, 90);
         padding: 8px;
-        font-size: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        font-size: 14px;
+        box-shadow: 0 0 4px gray;
+
         animation: fadeIn 0.3s ease-out;
       }
 
@@ -162,8 +163,8 @@ class SocialProofPopup extends HTMLElement {
 
       Object.assign(popup.style, {
         position: "fixed",
-        bottom: "1rem",
-        right: "1rem",
+        bottom: "1.5rem",
+        right: "1.5rem",
         zIndex: 9999,
       });
 
