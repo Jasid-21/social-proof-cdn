@@ -72,15 +72,12 @@ class SocialProofPopup extends HTMLElement {
 // sdk.js
 (function (global) {
   class SocialProofSDK {
-    constructor(bId) {
+    constructor() {
       this.apiUrl = 'https://rembgapi.vps.webdock.cloud/social-proof';
       this.socketUrl = 'wss://rembgapi.vps.webdock.cloud/social-proof/';
       this.popups = new Map();
       this.socket = null;
-      this.businessId = Number(bId);
-
-      this.connectSocket();
-      this.loadPopups();
+      this.businessKey = null;
 
       // Registrar el custom element solo una vez
       if (!customElements.get("social-proof-popup")) {
@@ -88,7 +85,9 @@ class SocialProofPopup extends HTMLElement {
       }
     }
 
-    init() {
+    init({ businessKey }) {
+      this.businessKey = businessKey;
+
       this.connectSocket();
       this.loadPopups();
 
@@ -100,8 +99,8 @@ class SocialProofPopup extends HTMLElement {
 
     pushEvent(eventName, parameters) {
       // Agregar validación
-      if (!this.businessId) {
-        console.error("[SocialProof] BusinessId no válido:", this.businessId);
+      if (!this.businessKey) {
+        console.error("[SocialProof] BusinessId no válido:", this.businessKey);
         return;
       }
 
@@ -113,7 +112,7 @@ class SocialProofPopup extends HTMLElement {
         body: JSON.stringify({
           eventName,
           parameters,
-          businessId: this.businessId,
+          businessKey: this.businessKey,
         }),
       })
       .catch(err => console.error("[SocialProof] Error en pushEvent:", err));
@@ -121,12 +120,12 @@ class SocialProofPopup extends HTMLElement {
 
     async loadPopups() {
       try {
-        if (!this.businessId) {
-          console.error("[SocialProof] BusinessId no válido para cargar popups:", this.businessId);
+        if (!this.businessKey) {
+          console.error("[SocialProof] BusinessId no válido para cargar popups:", this.businessKey);
           return;
         }
 
-        const url = `${this.apiUrl}/popups/getBusinessPopups?businessId=${this.businessId}`;
+        const url = `${this.apiUrl}/popups/getBusinessPopups?businessKey=${this.businessKey}`;
         console.log("[SocialProof] Cargando popups desde:", url); // Debug
         
         const resp = await fetch(url);
@@ -197,12 +196,7 @@ class SocialProofPopup extends HTMLElement {
 
   }
 
-  const currentScript = document.currentScript;
-  const src = new URL(currentScript.src);
-  const bId = src.searchParams.get("bId");
-  console.log("[SocialProof] BusinessId detectado:", Number(bId));
-
   // Exponer global
-  global.SocialProof = new SocialProofSDK(bId);
+  global.SocialProof = new SocialProofSDK();
 
 })(window);
