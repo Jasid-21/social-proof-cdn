@@ -102,6 +102,7 @@ class SocialProofPopup extends HTMLElement {
         body: JSON.stringify({
           eventName,
           parameters,
+          businessId: this.businessId,
         }),
       })
     }
