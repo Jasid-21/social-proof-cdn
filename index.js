@@ -71,11 +71,6 @@ class SocialProofPopup extends HTMLElement {
 
 // sdk.js
 (function (global) {
-  const currentScript = document.currentScript;
-  const src = new URL(currentScript.src);
-  const bId = src.searchParams.get("bId");
-  console.log(bId);
-
   class SocialProofSDK {
     constructor(bId) {
       this.apiUrl = 'https://rembgapi.vps.webdock.cloud/social-proof';
@@ -175,6 +170,11 @@ class SocialProofPopup extends HTMLElement {
     }
 
   }
+
+  const currentScript = document.currentScript;
+  const src = new URL(currentScript.src);
+  const bId = src.searchParams.get("bId");
+  console.log(Number(bId));
 
   // Exponer global
   global.SocialProof = new SocialProofSDK(bId);
