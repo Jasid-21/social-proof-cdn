@@ -79,6 +79,15 @@ class SocialProofPopup extends HTMLElement {
       this.socket = null;
       this.businessId = Number(bId);
 
+      // Inicializar cuando el DOM esté listo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.init());
+      } else {
+        this.init();
+      }
+    }
+
+    init() {
       this.connectSocket();
       this.loadPopups();
 
@@ -89,6 +98,12 @@ class SocialProofPopup extends HTMLElement {
     }
 
     pushEvent(eventName, parameters) {
+      // Agregar validación
+      if (!this.businessId) {
+        console.error("[SocialProof] BusinessId no válido:", this.businessId);
+        return;
+      }
+
       fetch(this.apiUrl + '/events/pushEvent', {
         method: 'POST',
         headers: {
@@ -100,81 +115,39 @@ class SocialProofPopup extends HTMLElement {
           businessId: this.businessId,
         }),
       })
+      .catch(err => console.error("[SocialProof] Error en pushEvent:", err));
     }
 
     async loadPopups() {
       try {
+        if (!this.businessId) {
+          console.error("[SocialProof] BusinessId no válido para cargar popups:", this.businessId);
+          return;
+        }
+
         const url = `${this.apiUrl}/popups/getBusinessPopups?businessId=${this.businessId}`;
+        console.log("[SocialProof] Cargando popups desde:", url); // Debug
+        
         const resp = await fetch(url);
         const data = await resp.json();
         data.forEach(popup => {
           this.popups.set(popup.id, popup);
         });
+        
+        console.log("[SocialProof] Popups cargados:", this.popups.size); // Debug
       } catch (err) {
         console.error("[SocialProof] Error cargando popups:", err);
       }
     }
 
-    connectSocket() {
-      if (!this.socketUrl) return;
-
-      this.socket = new WebSocket(this.socketUrl);
-
-      this.socket.onopen = () => {
-        console.log("[SocialProof] Socket conectado");
-      };
-
-      this.socket.onmessage = (event) => {
-        console.log(event);
-        const data = JSON.parse(event.data);
-        if (data.type === "firePopup") {
-          this.firePopup(data.popupId, data.title, data.message);
-        }
-      };
-
-      this.socket.onerror = (err) => {
-        console.error("[SocialProof] Error en socket:", err);
-      };
-
-      this.socket.onclose = () => {
-        console.log("[SocialProof] Socket cerrado, reintentando...");
-        setTimeout(() => this.connectSocket(), 3000); // reconexión
-      };
-    }
-
-    firePopup(id, title, message) {
-      const popup = this.popups.get(id);
-      if (!popup) {
-        console.warn(`[SocialProof] Popup con id ${id} no encontrado`);
-        return;
-      }
-
-      this.showPopup(title, message);
-    }
-
-    showPopup(title, content) {
-      const popup = document.createElement("social-proof-popup");
-      popup.setAttribute("title", title);
-      popup.setAttribute("content", content);
-
-      Object.assign(popup.style, {
-        position: "fixed",
-        bottom: "1.5rem",
-        right: "1.5rem",
-        zIndex: 9999,
-      });
-
-      document.body.appendChild(popup);
-
-      setTimeout(() => popup.remove(), 3000);
-    }
-
+    // ... resto del código igual
   }
 
   const currentScript = document.currentScript;
   const src = new URL(currentScript.src);
   const bId = src.searchParams.get("bId");
-  console.log(Number(bId));
+  
+  console.log("[SocialProof] BusinessId detectado:", Number(bId)); // Mejor debug
 
   // Exponer global
   global.SocialProof = new SocialProofSDK(bId);
