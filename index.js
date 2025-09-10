@@ -79,11 +79,12 @@ class SocialProofPopup extends HTMLElement {
       this.socket = null;
       this.businessId = Number(bId);
 
-      // Inicializar cuando el DOM esté listo
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.init());
-      } else {
-        this.init();
+      this.connectSocket();
+      this.loadPopups();
+
+      // Registrar el custom element solo una vez
+      if (!customElements.get("social-proof-popup")) {
+        customElements.define("social-proof-popup", SocialProofPopup);
       }
     }
 
@@ -140,8 +141,73 @@ class SocialProofPopup extends HTMLElement {
       }
     }
 
-    // ... resto del código igual
+    connectSocket() {
+      if (!this.socketUrl) return;
+
+      this.socket = new WebSocket(this.socketUrl);
+
+      this.socket.onopen = () => {
+        console.log("[SocialProof] Socket conectado");
+      };
+
+      this.socket.onmessage = (event) => {
+        console.log(event);
+        const data = JSON.parse(event.data);
+        if (data.type === "firePopup") {
+          this.firePopup(data.popupId, data.title, data.message);
+        }
+      };
+
+      this.socket.onerror = (err) => {
+        console.error("[SocialProof] Error en socket:", err);
+      };
+
+      this.socket.onclose = () => {
+        console.log("[SocialProof] Socket cerrado, reintentando...");
+        setTimeout(() => this.connectSocket(), 3000); // reconexión
+      };
+    }
+
+    firePopup(id, title, message) {
+      const popup = this.popups.get(id);
+      if (!popup) {
+        console.warn(`[SocialProof] Popup con id ${id} no encontrado`);
+        return;
+      }
+
+      this.showPopup(title, message);
+    }
+
+    showPopup(title, content) {
+      const popup = document.createElement("social-proof-popup");
+      popup.setAttribute("title", title);
+      popup.setAttribute("content", content);
+
+      Object.assign(popup.style, {
+        position: "fixed",
+        bottom: "1.5rem",
+        right: "1.5rem",
+        zIndex: 9999,
+      });
+
+      document.body.appendChild(popup);
+
+      setTimeout(() => popup.remove(), 3000);
+    }
+
   }
+
+  const currentScript = document.currentScript;
+  const src = new URL(currentScript.src);
+  const bId = src.searchParams.get("bId");
+  console.log(Number(bId));
+
+  // Exponer global
+  global.SocialProof = new SocialProofSDK(bId);
+
+})(window);
+
+(function (global) {
 
   const currentScript = document.currentScript;
   const src = new URL(currentScript.src);
