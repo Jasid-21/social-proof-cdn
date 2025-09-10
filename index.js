@@ -200,20 +200,7 @@ class SocialProofPopup extends HTMLElement {
   const currentScript = document.currentScript;
   const src = new URL(currentScript.src);
   const bId = src.searchParams.get("bId");
-  console.log(Number(bId));
-
-  // Exponer global
-  global.SocialProof = new SocialProofSDK(bId);
-
-})(window);
-
-(function (global) {
-
-  const currentScript = document.currentScript;
-  const src = new URL(currentScript.src);
-  const bId = src.searchParams.get("bId");
-  
-  console.log("[SocialProof] BusinessId detectado:", Number(bId)); // Mejor debug
+  console.log("[SocialProof] BusinessId detectado:", Number(bId));
 
   // Exponer global
   global.SocialProof = new SocialProofSDK(bId);
