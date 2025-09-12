@@ -143,7 +143,7 @@ class SocialProofPopup extends HTMLElement {
     connectSocket() {
       if (!this.socketUrl) return;
 
-      this.socket = new WebSocket(this.socketUrl);
+      this.socket = new WebSocket(this.socketUrl + '?businessKey=' + this.businessKey);
 
       this.socket.onopen = () => {
         console.log("[SocialProof] Socket conectado");
