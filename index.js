@@ -97,14 +97,14 @@ class SocialProofPopup extends HTMLElement {
       }
     }
 
-    pushEvent(eventName, parameters) {
+    async pushEvent(eventName, parameters) {
       // Agregar validación
       if (!this.businessKey) {
         console.error("[SocialProof] BusinessId no válido:", this.businessKey);
         return;
       }
 
-      fetch(this.apiUrl + '/events/pushEvent', {
+      const resp = await fetch(this.apiUrl + '/events/pushEvent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,8 +114,8 @@ class SocialProofPopup extends HTMLElement {
           parameters,
           businessKey: this.businessKey,
         }),
-      })
-      .catch(err => console.error("[SocialProof] Error en pushEvent:", err));
+      });
+      return resp;
     }
 
     async loadPopups() {
