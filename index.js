@@ -3,57 +3,182 @@ class SocialProofPopup extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("social-proof-popup");
+    // Crear el contenedor principal
+    const popup = document.createElement("div");
+    popup.className = "social-proof-popup";
 
-    const title = document.createElement("div");
-    title.classList.add("popup-title");
-    title.textContent = this.getAttribute("title") || "Título";
+    // Header
+    const header = document.createElement("div");
+    header.className = "popup-header";
 
-    const content = document.createElement("div");
-    content.classList.add("popup-content");
-    content.textContent = this.getAttribute("content") || "Contenido del popup";
+    // Icono
+    const icon = document.createElement("div");
+    icon.className = "popup-icon";
 
-    wrapper.appendChild(title);
-    wrapper.appendChild(content);
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute(
+      "d",
+      "M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21A2 2 0 0 0 5 23H19A2 2 0 0 0 21 21V9H21ZM19 21H5V3H13V9H19V21Z"
+    );
+    svg.appendChild(path);
+    icon.appendChild(svg);
+
+    // Título
+    const title = document.createElement("h4");
+    title.className = "popup-title";
+    title.textContent = this.getAttribute('title') || 'Nuevo evento';
+
+    // Agregar icono, título y botón al header
+    header.appendChild(icon);
+    header.appendChild(title);
+
+    // Mensaje
+    const message = document.createElement("p");
+    message.className = "popup-message";
+    message.textContent = this.getAttribute('message') || 'Un nuevo evento ha ocurrido';
+
+    // Tiempo
+    const time = document.createElement("div");
+    time.className = "popup-time";
+    time.id = "popupTime";
+    time.textContent = "Hace pocos segundos";
+
+    // Montar todo en el contenedor
+    popup.appendChild(header);
+    popup.appendChild(message);
+    popup.appendChild(time);
 
     const style = document.createElement("style");
     style.textContent = `
       .social-proof-popup {
-        width: 100%;
-        max-width: 320px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 8px;
-        color: rgb(90, 90, 90);
-        padding: 8px;
+        position: fixed;
+        bottom: 1.5rem;
+        right: -1rem;
+
+        width: 320px;
+
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+
+        padding: 16px;
+        z-index: 9999;
+        opacity: 0;
+
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         font-size: 14px;
-        box-shadow: 0 0 4px gray;
+        line-height: 1.4;
+    }
 
-        animation: fadeIn 0.3s ease-out;
-      }
+    .social-proof-popup.show {
+        right: 1.5rem;
+        opacity: 1;
+    }
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      .popup-title {
-        font-size: 16px;
-        font-weight: 600;
-        border-bottom: 1px solid rgb(124, 124, 124);
+    /* Header */
+    .popup-header {
+        display: flex;
+        align-items: center;
         margin-bottom: 8px;
-      }
+    }
 
-      .popup-content {
+    .popup-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .popup-icon svg {
+        width: 16px;
+        height: 16px;
+        fill: white;
+    }
+
+    .popup-title {
+        font-weight: 600;
+        color: #1a1a1a;
         font-size: 14px;
-      }
+        margin: 0;
+    }
+
+    .popup-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        margin-left: auto;
+        color: #999;
+        border-radius: 4px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .popup-close:hover {
+        background: #f5f5f5;
+        color: #666;
+    }
+
+    /* Content */
+    .popup-message {
+        color: #666;
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .popup-time {
+        color: #999;
+        font-size: 12px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .popup-time::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: #999;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+        .social-proof-popup {
+            width: calc(100vw - 40px);
+            left: 20px;
+            right: 20px;
+        }
+    }
     `;
 
-    this.shadowRoot.append(style, wrapper);
+    this.shadowRoot.append(style, popup);
+    this.popup = popup;
+  }
+
+  show() {
+    this.popup.classList.add('show');
+  }
+
+  close() {
+    this.popup.classList.remove('show');
   }
 
   static get observedAttributes() {
-    return ["title", "content"];
+    return ["title", "message"];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -61,8 +186,8 @@ class SocialProofPopup extends HTMLElement {
       if (name === "title") {
         this.shadowRoot.querySelector(".popup-title").textContent = newValue;
       }
-      if (name === "content") {
-        this.shadowRoot.querySelector(".popup-content").textContent = newValue;
+      if (name === "message") {
+        this.shadowRoot.querySelector(".popup-message").textContent = newValue;
       }
     }
   }
@@ -177,23 +302,23 @@ class SocialProofPopup extends HTMLElement {
       this.showPopup(title, message);
     }
 
-    showPopup(title, content) {
+    showPopup(title, message) {
       const popup = document.createElement("social-proof-popup");
       popup.setAttribute("title", title);
-      popup.setAttribute("content", content);
-
-      Object.assign(popup.style, {
-        position: "fixed",
-        bottom: "1.5rem",
-        right: "1.5rem",
-        zIndex: 9999,
-      });
+      popup.setAttribute("message", message);
 
       document.body.appendChild(popup);
 
-      setTimeout(() => popup.remove(), 3000);
-    }
+      setTimeout(() => {
+        popup.show();
+      }, 16);
 
+      setTimeout(() => {
+        popup.close();
+        
+        setTimeout(() => popup.remove(), 400);
+      }, 3416);
+    }
   }
 
   // Exponer global
